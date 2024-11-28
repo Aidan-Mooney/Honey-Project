@@ -8,9 +8,5 @@ def get_token(url: str, client_id: str, client_secret: str):
         "assertion": client_secret,
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
-    try:
-        response = requests.post(url, data=data, headers=headers)
-        response.raise_for_status()
-        return response.json()
-    except Exception as err:
-        raise err
+    response = requests.post(url, data=data, headers=headers)
+    return {"code": response.status_code, "body": response.json()}

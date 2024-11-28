@@ -1,4 +1,3 @@
-from requests.exceptions import HTTPError
 from requests.models import Response
 import pytest
 from unittest.mock import patch, Mock
@@ -25,8 +24,10 @@ def test_correct_url_and_correct_auth_details_returns_a_valid_token_json(respons
         requests_mock.post.return_value = response_mock
         result = get_token(test_url, test_client_id, test_client_secret)
     assert isinstance(result, dict)
-    assert result["access_token"] == test_token
-    assert result["expires_in"] == test_expiry
+    code, body = result["code"], result["body"]
+    assert code == 200
+    assert body["access_token"] == test_token
+    assert body["expires_in"] == test_expiry
 
 
 def test_request_functions_are_called_correctly(response_mock):
@@ -55,7 +56,6 @@ def test_request_functions_are_called_correctly(response_mock):
         "headers": {"Content-Type": "application/x-www-form-urlencoded"},
     }
     assert requests_mock.post.call_count == 1
-    assert response_mock.raise_for_status.call_count == 1
     assert response_mock.json.call_count == 1
 
 
@@ -70,14 +70,12 @@ def test_http_errors_are_raised(response_mock):
     }
     response_mock.status_code = 404
     response_mock.json.return_value = {"code": 404, "message": "HTTP 404 Not Found"}
-    response_mock.raise_for_status.side_effect = HTTPError(
-        f"404 Client Error: Not Found for url: {test_url}"
-    )
     with patch("src.get_token.requests") as requests_mock:
         requests_mock.post.return_value = response_mock
-        with pytest.raises(HTTPError) as err:
-            get_token(test_url, test_client_id, test_client_secret)
-    assert str(err.value) == f"404 Client Error: Not Found for url: {test_url}"
+        result = get_token(test_url, test_client_id, test_client_secret)
+    code, body = result["code"], result["body"]
+    assert code == 404
+    assert body == {"code": 404, "message": "HTTP 404 Not Found"}
     post_args, post_kwargs = requests_mock.post.call_args
     assert post_args == (test_url,)
     assert post_kwargs == {
@@ -85,5 +83,4 @@ def test_http_errors_are_raised(response_mock):
         "headers": {"Content-Type": "application/x-www-form-urlencoded"},
     }
     assert requests_mock.post.call_count == 1
-    assert response_mock.raise_for_status.call_count == 1
-    assert response_mock.json.call_count == 0
+    assert response_mock.json.call_count == 1
