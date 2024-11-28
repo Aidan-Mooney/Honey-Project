@@ -1,7 +1,7 @@
 import requests
 
 
-def get_token(url, client_id, client_secret):
+def get_token(url: str, client_id: str, client_secret: str):
     data = {
         "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
         "client_id": client_id,
