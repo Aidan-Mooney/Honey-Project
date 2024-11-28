@@ -1,4 +1,4 @@
-from requests.exceptions import HTTPError
+# from requests.exceptions import HTTPError
 from requests.models import Response
 import pytest
 from src.access_api import access_api
