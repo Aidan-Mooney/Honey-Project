@@ -18,9 +18,10 @@ def test_valid_url_and_token_returns_json_with_correct_keys(response_mock):
     response_mock.json.return_value = return_dict
     with patch("src.access_api.requests") as requests_mock:
         requests_mock.get.return_value = response_mock
-        result = access_api(test_url, test_token)
+        code, result = access_api(test_url, test_token)
     assert isinstance(result, dict)
-    assert result == {"code": 200, "body": return_dict}
+    assert code == 200
+    assert result == return_dict
 
 
 def test_request_functions_are_called_correctly(response_mock):
@@ -49,7 +50,7 @@ def test_http_errors_return_correctly(response_mock):
     response_mock.json.return_value = return_dict
     with patch("src.access_api.requests") as requests_mock:
         requests_mock.get.return_value = response_mock
-        result = access_api(test_url, test_token)
+        code, result = access_api(test_url, test_token)
     get_args, get_kwargs = requests_mock.get.call_args
     assert get_args == (test_url,)
     assert get_kwargs == {
@@ -57,4 +58,5 @@ def test_http_errors_return_correctly(response_mock):
     }
     assert requests_mock.get.call_count == 1
     assert response_mock.json.call_count == 1
-    assert result == {"code": 404, "body": return_dict}
+    assert code == 404
+    assert result == return_dict
