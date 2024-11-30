@@ -22,12 +22,11 @@ def test_correct_url_and_correct_auth_details_returns_a_valid_token_json(respons
     }
     with patch("src.get_token.requests") as requests_mock:
         requests_mock.post.return_value = response_mock
-        result = get_token(test_url, test_client_id, test_client_secret)
+        code, result = get_token(test_url, test_client_id, test_client_secret)
     assert isinstance(result, dict)
-    code, body = result["code"], result["body"]
     assert code == 200
-    assert body["access_token"] == test_token
-    assert body["expires_in"] == test_expiry
+    assert result["access_token"] == test_token
+    assert result["expires_in"] == test_expiry
 
 
 def test_request_functions_are_called_correctly(response_mock):
@@ -72,10 +71,9 @@ def test_http_errors_are_raised(response_mock):
     response_mock.json.return_value = {"code": 404, "message": "HTTP 404 Not Found"}
     with patch("src.get_token.requests") as requests_mock:
         requests_mock.post.return_value = response_mock
-        result = get_token(test_url, test_client_id, test_client_secret)
-    code, body = result["code"], result["body"]
+        code, result = get_token(test_url, test_client_id, test_client_secret)
     assert code == 404
-    assert body == {"code": 404, "message": "HTTP 404 Not Found"}
+    assert result == {"code": 404, "message": "HTTP 404 Not Found"}
     post_args, post_kwargs = requests_mock.post.call_args
     assert post_args == (test_url,)
     assert post_kwargs == {

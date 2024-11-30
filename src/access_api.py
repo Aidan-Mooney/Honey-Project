@@ -5,7 +5,7 @@ def access_api(url, token):
     headers = {"Authorization": f"bearer {token}"}
     response = requests.get(url, headers=headers)
     try:
-        return {"code": response.status_code, "body": response.json()}
+        return response.status_code, response.json()
     except requests.exceptions.JSONDecodeError:
-        return {"code": response.status_code, "body": response.text}
+        return response.status_code, response.text
     return

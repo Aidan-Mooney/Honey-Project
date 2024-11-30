@@ -10,6 +10,6 @@ def get_token(url: str, client_id: str, client_secret: str):
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     response = requests.post(url, data=data, headers=headers)
     try:
-        return {"code": response.status_code, "body": response.json()}
+        return response.status_code, response.json()
     except requests.exceptions.JSONDecodeError:
-        return {"code": response.status_code, "body": response.text}
+        return response.status_code, response.text
