@@ -7,9 +7,12 @@ from src.get_token import get_token
 from src.access_api import access_api
 from src.format_api_url import format_api_url
 from src.extract_write import extract_write
+from src.reset_extracts_data import reset_extracts_data
 
 
-def extract(**kwargs):
+def extract(rewrite=False, **kwargs):
+    if rewrite:
+        reset_extracts_data()
     load_dotenv(".env", override=True)
     start_time = dt.now().timestamp()
     time_till_expiry = 0
@@ -46,7 +49,7 @@ def extract(**kwargs):
             )
             return
         if api_body["purchases"]:
-            lines_saved = extract_write(api_body["purchases"])
+            lines_saved = extract_write(api_body["purchases"], rewrite)
             logging.info(f"Saved {lines_saved}.")
         else:
             break

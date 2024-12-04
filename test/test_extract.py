@@ -74,7 +74,7 @@ def test_successful_token_and_less_than_50_purchases_in_endpoint_works_correctly
     assert access_api_kwargs_2 == {}
     assert extract_write_mock.call_count == 1
     extract_write_args, extract_write_kwargs = extract_write_mock.call_args
-    assert extract_write_args == (test_purchases,)
+    assert extract_write_args == (test_purchases, False)
     assert extract_write_kwargs == {}
 
 
@@ -168,8 +168,8 @@ def test_successful_token_and_more_than_50_purchases_in_endpoint_works_correctly
     assert extract_write_mock.call_count == 2
     extract_write_args_1, extract_write_kwargs_1 = extract_write_mock.call_args_list[0]
     extract_write_args_2, extract_write_kwargs_2 = extract_write_mock.call_args_list[1]
-    assert extract_write_args_1 == (test_purchases_1,)
-    assert extract_write_args_2 == (test_purchases_2,)
+    assert extract_write_args_1 == (test_purchases_1, False)
+    assert extract_write_args_2 == (test_purchases_2, False)
     assert extract_write_kwargs_1 == {}
     assert extract_write_kwargs_2 == {}
 
@@ -300,3 +300,55 @@ def test_successful_token_and_unsuccessful_api_call():
     assert access_api_args_1 == (f"{test_endpoint}?limit=50", test_token)
     assert access_api_kwargs_1 == {}
     assert extract_write_mock.call_count == 0
+
+
+def test_when_rewrite_is_true_reset_extracts_data_is_ran():
+    timestamp_mock = Mock()
+    timestamp_mock.timestamp.side_effect = [float(i) for i in range(4)]
+    test_token_url = "test_url"
+    test_id = "test_id"
+    test_secret = "test_secret"
+    test_endpoint = "test_endpoint"
+    test_environ = {
+        "OAUTH_URL": test_token_url,
+        "OAUTH_CLIENT_ID": test_id,
+        "OAUTH_CLIENT_SECRET": test_secret,
+        "ENDPOINT_URL": test_endpoint,
+    }
+    test_token = "test_token"
+    test_token_code = 200
+    test_token_body = {"access_token": test_token, "expires_in": 7200}
+    test_last_hash = "lastHash"
+    test_purchases = [i for i in range(40)]
+    test_api_code = 200
+    test_api_body_1 = {
+        "purchases": test_purchases,
+        "firstPurchaseHash": "firstHash",
+        "lastPurchaseHash": test_last_hash,
+        "linkUrls": ["test_link_url"],
+    }
+    test_api_body_2 = {"purchases": [], "linkUrls": []}
+    with patch(f"{PATCH_PATH}.os.environ", test_environ):
+        with patch(f"{PATCH_PATH}.load_dotenv"):
+            with patch(f"{PATCH_PATH}.dt") as now_mock:
+                now_mock.now.return_value = timestamp_mock
+                with patch(f"{PATCH_PATH}.logging"):
+                    with patch(f"{PATCH_PATH}.reset_extracts_data") as reset_mock:
+                        with patch(f"{PATCH_PATH}.get_token") as get_token_mock:
+                            get_token_mock.return_value = (
+                                test_token_code,
+                                test_token_body,
+                            )
+                            with patch(f"{PATCH_PATH}.access_api") as access_api_mock:
+                                access_api_mock.side_effect = [
+                                    (test_api_code, test_api_body_1),
+                                    (test_api_code, test_api_body_2),
+                                ]
+                                with patch(
+                                    f"{PATCH_PATH}.extract_write"
+                                ) as extract_write_mock:
+                                    extract_write_mock.return_value = len(
+                                        test_purchases
+                                    )
+                                    extract(rewrite=True)
+    assert reset_mock.call_count == 1
