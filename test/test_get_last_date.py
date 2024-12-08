@@ -36,3 +36,9 @@ test_id,test_amount,1999-06-01-00-00-00,test_latitude,test_longitude"""
         f"data/extract/{test_file_date}/purchases.csv", "r", encoding="utf-8"
     )
     assert result == test_date
+
+
+def test_if_no_latest_folder_return_none():
+    with patch("src.get_last_date.get_latest_folder", return_value=None):
+        result = get_last_date()
+    assert result is None
