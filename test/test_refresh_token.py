@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from requests import HTTPError
+from requests.exceptions import HTTPError
 import pytest
 
 
