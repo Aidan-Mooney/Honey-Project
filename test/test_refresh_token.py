@@ -62,7 +62,7 @@ def test_HTTPError_is_raised_if_get_token_raises_HTTPError():
         with patch(f"{PATCH_PATH}.get_token") as token_mock:
             token_mock.side_effect = HTTPError("HTTP 404 Not Found")
             with pytest.raises(HTTPError) as err:
-                result = refresh_token(
+                refresh_token(
                     test_token_url,
                     test_auth_id,
                     test_auth_secret,
