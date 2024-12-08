@@ -1,6 +1,6 @@
 # from requests.exceptions import HTTPError
 from requests.models import Response
-from requests import HTTPError
+from requests.exceptions import HTTPError
 import pytest
 from src.access_api import access_api
 from unittest.mock import patch, Mock

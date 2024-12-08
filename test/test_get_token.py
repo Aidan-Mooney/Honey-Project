@@ -1,5 +1,5 @@
 from requests.models import Response
-from requests import HTTPError
+from requests.exceptions import HTTPError
 import pytest
 from unittest.mock import patch, Mock
 from src.get_token import get_token
