@@ -1,4 +1,4 @@
-def write_args(file_path, *args):
+def write_args(file_path: str, *args):
     with open(file_path, "a+", encoding="utf-8") as f:
         for arg in args[:-1]:
             f.write(str(arg))

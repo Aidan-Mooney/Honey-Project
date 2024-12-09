@@ -4,7 +4,13 @@ from datetime import datetime as dt
 from src.get_token import get_token
 
 
-def refresh_token(token_url, auth_id, auth_secret, start_time, time_till_expiry):
+def refresh_token(
+    token_url: str,
+    auth_id: str,
+    auth_secret: str,
+    start_time: str,
+    time_till_expiry: int,
+):
     if start_time + time_till_expiry <= dt.now().timestamp():
         token_response = get_token(token_url, auth_id, auth_secret)
         start_time = dt.now().timestamp()
