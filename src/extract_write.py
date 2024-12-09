@@ -1,7 +1,7 @@
 from src.write_args import write_args
 
 
-def extract_write(base_path, purchases: dict):
+def extract_write(base_path: str, purchases: dict):
     lines_saved = 0
     for purchase in purchases:
         purchaseID = purchase["purchaseUUID1"]

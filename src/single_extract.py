@@ -4,12 +4,12 @@ from src.extract_write import extract_write
 
 
 def single_extract(
-    token,
-    base_endpoint,
-    base_path,
-    last_purchase_hash,
-    last_date,
-    limit=50,
+    token: str,
+    base_endpoint: str,
+    base_path: str,
+    last_purchase_hash: str | None,
+    last_date: str | None,
+    limit: int = 50,
     **kwargs,
 ):
     if last_purchase_hash:

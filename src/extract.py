@@ -5,6 +5,7 @@ from requests.exceptions import HTTPError
 from dotenv import load_dotenv
 from datetime import datetime as dt
 import logging
+import traceback
 
 
 from src.refresh_token import refresh_token
@@ -12,7 +13,7 @@ from src.get_last_date import get_last_date
 from src.single_extract import single_extract
 
 
-def extract(limit=50, **kwargs):
+def extract(limit: int = 50, **kwargs):
     try:
         load_dotenv(".env", override=True)
         try:
@@ -22,6 +23,7 @@ def extract(limit=50, **kwargs):
             base_endpoint = os.environ["ENDPOINT_URL"]
         except KeyError as err:
             logging.warning(f"Necessary environmental variables not found: {err}")
+            logging.warning("Traceback details:\n" + traceback.format_exc())
             return "failure"
         start_time = dt.now().timestamp()
         time_till_expiry = 0
@@ -37,6 +39,7 @@ def extract(limit=50, **kwargs):
                 )
             except HTTPError as err:
                 logging.warning(f"{type(err).__name__}: {err}")
+                logging.warning("Traceback details:\n" + traceback.format_exc())
                 shutil.rmtree(base_path, ignore_errors=False)
                 return "failure"
             try:
@@ -53,6 +56,7 @@ def extract(limit=50, **kwargs):
                 )
             except (HTTPError, KeyError) as err:
                 logging.warning(f"{type(err).__name__}: {err}")
+                logging.warning("Traceback details:\n" + traceback.format_exc())
                 shutil.rmtree(base_path, ignore_errors=False)
                 return "failure"
             if lines_saved:
@@ -61,4 +65,5 @@ def extract(limit=50, **kwargs):
                 return "success"
     except Exception as err:
         logging.critical(f"{type(err).__name__}: {err}")
+        logging.critical("Traceback details:\n" + traceback.format_exc())
         return "failure"

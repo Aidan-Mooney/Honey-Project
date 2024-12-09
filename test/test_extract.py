@@ -135,18 +135,24 @@ def test_successful_token_and_more_than_50_purchases_in_endpoint_works_correctly
     assert log_kwargs2 == {}
 
 
+@patch(f"{PATCH_PATH}.traceback")
 @patch(f"{PATCH_PATH}.logging")
 @patch(f"{PATCH_PATH}.os")
 @patch(f"{PATCH_PATH}.load_dotenv")
-def test_unconfigured_env_file_is_logged(_, os_mock, log_mock):
+def test_unconfigured_env_file_is_logged(_, os_mock, log_mock, traceback_mock):
+    traceback_mock.format_exc.return_value = "traceback stuff"
     os_mock.environ = {}
     result = extract()
     assert result == "failure"
-    log_args, log_kwargs = log_mock.warning.call_args
-    assert log_args == ("Necessary environmental variables not found: 'OAUTH_URL'",)
-    assert log_kwargs == {}
+    log_args1, log_kwargs1 = log_mock.warning.call_args_list[0]
+    assert log_args1 == ("Necessary environmental variables not found: 'OAUTH_URL'",)
+    assert log_kwargs1 == {}
+    log_args2, log_kwargs2 = log_mock.warning.call_args_list[1]
+    assert log_args2 == ("Traceback details:\ntraceback stuff",)
+    assert log_kwargs2 == {}
 
 
+@patch(f"{PATCH_PATH}.traceback")
 @patch(f"{PATCH_PATH}.shutil.rmtree")
 @patch(f"{PATCH_PATH}.logging")
 @patch(f"{PATCH_PATH}.refresh_token")
@@ -156,8 +162,17 @@ def test_unconfigured_env_file_is_logged(_, os_mock, log_mock):
 @patch(f"{PATCH_PATH}.os")
 @patch(f"{PATCH_PATH}.load_dotenv")
 def test_unsuccessful_token_call_raises_warning_log(
-    _, os_mock, now_mock, __, path_mock, token_mock, log_mock, shutil_mock
+    _,
+    os_mock,
+    now_mock,
+    __,
+    path_mock,
+    token_mock,
+    log_mock,
+    shutil_mock,
+    traceback_mock,
 ):
+    traceback_mock.format_exc.return_value = "traceback stuff"
     test_url = "OAUTH_URL"
     test_id = "OAUTH_CLIENT_ID"
     test_secret = "OAUTH_CLIENT_SECRET"
@@ -173,13 +188,17 @@ def test_unsuccessful_token_call_raises_warning_log(
     token_mock.side_effect = HTTPError("HTTP 404 Not Found")
     result = extract()
     assert result == "failure"
-    log_args, log_kwargs = log_mock.warning.call_args
-    assert log_args == ("HTTPError: HTTP 404 Not Found",)
-    assert log_kwargs == {}
+    log_args1, log_kwargs1 = log_mock.warning.call_args_list[0]
+    assert log_args1 == ("HTTPError: HTTP 404 Not Found",)
+    assert log_kwargs1 == {}
+    log_args2, log_kwargs2 = log_mock.warning.call_args_list[1]
+    assert log_args2 == ("Traceback details:\ntraceback stuff",)
+    assert log_kwargs2 == {}
     assert path_mock.call_count == 1
     assert shutil_mock.call_count == 1
 
 
+@patch(f"{PATCH_PATH}.traceback")
 @patch(f"{PATCH_PATH}.single_extract")
 @patch(f"{PATCH_PATH}.shutil.rmtree")
 @patch(f"{PATCH_PATH}.logging")
@@ -199,7 +218,9 @@ def test_successful_token_and_unsuccessful_api_call(
     log_mock,
     shutil_mock,
     single_extract_mock,
+    traceback_mock,
 ):
+    traceback_mock.format_exc.return_value = "traceback stuff"
     test_url = "OAUTH_URL"
     test_id = "OAUTH_CLIENT_ID"
     test_secret = "OAUTH_CLIENT_SECRET"
@@ -216,13 +237,17 @@ def test_successful_token_and_unsuccessful_api_call(
     single_extract_mock.side_effect = HTTPError("HTTP 404 Not Found")
     result = extract()
     assert result == "failure"
-    log_args, log_kwargs = log_mock.warning.call_args
-    assert log_args == ("HTTPError: HTTP 404 Not Found",)
-    assert log_kwargs == {}
+    log_args1, log_kwargs1 = log_mock.warning.call_args_list[0]
+    assert log_args1 == ("HTTPError: HTTP 404 Not Found",)
+    assert log_kwargs1 == {}
+    log_args2, log_kwargs2 = log_mock.warning.call_args_list[1]
+    assert log_args2 == ("Traceback details:\ntraceback stuff",)
+    assert log_kwargs2 == {}
     assert path_mock.call_count == 1
     assert shutil_mock.call_count == 1
 
 
+@patch(f"{PATCH_PATH}.traceback")
 @patch(f"{PATCH_PATH}.single_extract")
 @patch(f"{PATCH_PATH}.shutil.rmtree")
 @patch(f"{PATCH_PATH}.logging")
@@ -242,7 +267,9 @@ def test_successful_api_call_with_key_error(
     log_mock,
     shutil_mock,
     single_extract_mock,
+    traceback_mock,
 ):
+    traceback_mock.format_exc.return_value = "traceback stuff"
     test_url = "OAUTH_URL"
     test_id = "OAUTH_CLIENT_ID"
     test_secret = "OAUTH_CLIENT_SECRET"
@@ -259,20 +286,28 @@ def test_successful_api_call_with_key_error(
     single_extract_mock.side_effect = KeyError("name")
     result = extract()
     assert result == "failure"
-    log_args, log_kwargs = log_mock.warning.call_args
-    assert log_args == ("KeyError: 'name'",)
-    assert log_kwargs == {}
+    log_args1, log_kwargs1 = log_mock.warning.call_args_list[0]
+    assert log_args1 == ("KeyError: 'name'",)
+    assert log_kwargs1 == {}
+    log_args2, log_kwargs2 = log_mock.warning.call_args_list[1]
+    assert log_args2 == ("Traceback details:\ntraceback stuff",)
+    assert log_kwargs2 == {}
     assert path_mock.call_count == 1
     assert shutil_mock.call_count == 1
 
 
+@patch(f"{PATCH_PATH}.traceback")
 @patch(f"{PATCH_PATH}.logging")
 @patch(f"{PATCH_PATH}.load_dotenv")
-def test_critical_log_for_unaccounted_error(load_env_mock, log_mock):
+def test_critical_log_for_unaccounted_error(load_env_mock, log_mock, traceback_mock):
+    traceback_mock.format_exc.return_value = "traceback stuff"
     load_env_mock.side_effect = Exception("Uh oh load_env is broken for NO REASON")
     result = extract()
     assert result == "failure"
-    assert log_mock.critical.call_count == 1
-    log_args, log_kwargs = log_mock.critical.call_args
-    assert log_args == ("Exception: Uh oh load_env is broken for NO REASON",)
-    assert log_kwargs == {}
+    assert log_mock.critical.call_count == 2
+    log_args1, log_kwargs1 = log_mock.critical.call_args_list[0]
+    log_args2, log_kwargs2 = log_mock.critical.call_args_list[1]
+    assert log_args1 == ("Exception: Uh oh load_env is broken for NO REASON",)
+    assert log_kwargs1 == {}
+    assert log_args2 == ("Traceback details:\ntraceback stuff",)
+    assert log_kwargs2 == {}
