@@ -1,6 +1,4 @@
 from unittest.mock import patch
-from requests.exceptions import HTTPError
-import pytest
 
 
 from src.refresh_token import refresh_token
