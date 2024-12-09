@@ -1,4 +1,3 @@
-# from requests.exceptions import HTTPError
 from requests.models import Response
 from requests.exceptions import HTTPError
 import pytest
