@@ -49,9 +49,9 @@ def extract(limit: int = 50, **kwargs):
                     token,
                     base_endpoint,
                     base_path,
-                    limit,
                     last_purchase_hash,
                     last_date,
+                    limit,
                     **kwargs,
                 )
             except (HTTPError, KeyError) as err:
@@ -66,4 +66,8 @@ def extract(limit: int = 50, **kwargs):
     except Exception as err:
         logging.critical(f"{type(err).__name__}: {err}")
         logging.critical("Traceback details:\n" + traceback.format_exc())
+        try:
+            shutil.rmtree(base_path, ignore_errors=False)
+        except NameError:
+            pass
         return "failure"
