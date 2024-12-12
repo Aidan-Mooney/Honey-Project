@@ -2,7 +2,7 @@ from requests.models import Response
 from requests.exceptions import HTTPError
 import pytest
 from unittest.mock import patch, Mock
-from src.get_token import get_token
+from src.extract.get_token import get_token
 
 
 @pytest.fixture
@@ -21,7 +21,7 @@ def test_correct_url_and_correct_auth_details_returns_a_valid_token_json(respons
         "access_token": test_token,
         "expires_in": test_expiry,
     }
-    with patch("src.get_token.requests") as requests_mock:
+    with patch("src.extract.get_token.requests") as requests_mock:
         requests_mock.post.return_value = response_mock
         result = get_token(test_url, test_client_id, test_client_secret)
     assert isinstance(result, dict)
@@ -45,7 +45,7 @@ def test_request_functions_are_called_correctly(response_mock):
         "access_token": test_token,
         "expires_in": test_expiry,
     }
-    with patch("src.get_token.requests") as requests_mock:
+    with patch("src.extract.get_token.requests") as requests_mock:
         requests_mock.post.return_value = response_mock
         get_token(test_url, test_client_id, test_client_secret)
     post_args, post_kwargs = requests_mock.post.call_args
@@ -65,7 +65,7 @@ def test_http_errors_are_raised(response_mock):
     response_mock.status_code = 404
     response_mock.json.return_value = {"code": 404, "message": "HTTP 404 Not Found"}
     response_mock.raise_for_status.side_effect = HTTPError("HTTP 404: Not Found")
-    with patch("src.get_token.requests.post") as requests_mock:
+    with patch("src.extract.get_token.requests.post") as requests_mock:
         requests_mock.return_value = response_mock
         with pytest.raises(HTTPError) as err:
             get_token(test_url, test_client_id, test_client_secret)

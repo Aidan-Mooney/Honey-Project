@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 
-from src.single_extract import single_extract
+from src.extract.single_extract import single_extract
 
 
-PATCH_PATH = "src.single_extract"
+PATCH_PATH = "src.extract.single_extract"
 
 
 def test_empty_json_api_response_returns_none():

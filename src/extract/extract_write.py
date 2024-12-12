@@ -1,4 +1,4 @@
-from src.write_args import write_args
+from src.extract.write_args import write_args
 
 
 def extract_write(base_path: str, purchases: dict):

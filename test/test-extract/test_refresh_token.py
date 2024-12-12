@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 
-from src.refresh_token import refresh_token
+from src.extract.refresh_token import refresh_token
 
 
-PATCH_PATH = "src.refresh_token"
+PATCH_PATH = "src.extract.refresh_token"
 
 
 def test_none_is_returned_if_the_expiry_time_has_not_been_reached():

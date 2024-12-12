@@ -1,4 +1,4 @@
-from src.get_latest_folder import get_latest_folder
+from src.extract.get_latest_folder import get_latest_folder
 
 
 def get_last_date():

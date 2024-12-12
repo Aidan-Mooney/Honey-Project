@@ -1,7 +1,7 @@
 from unittest.mock import patch, call
 
 
-from src.write_args import write_args
+from src.extract.write_args import write_args
 
 
 def test_one_string_arg_is_written():
