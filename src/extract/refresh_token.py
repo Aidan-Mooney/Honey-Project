@@ -1,7 +1,7 @@
 from datetime import datetime as dt
 
 
-from src.get_token import get_token
+from src.extract.get_token import get_token
 
 
 def refresh_token(

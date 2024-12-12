@@ -1,5 +1,5 @@
 import pytest
-from src.format_api_url import format_api_url
+from src.extract.format_api_url import format_api_url
 
 
 def test_a_string_is_returned():

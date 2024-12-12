@@ -2,10 +2,10 @@ from unittest.mock import patch
 from requests.exceptions import HTTPError
 
 
-from src.extract import extract
+from src.extract.extract import extract
 
 
-PATCH_PATH = "src.extract"
+PATCH_PATH = "src.extract.extract"
 
 
 @patch(f"{PATCH_PATH}.single_extract")

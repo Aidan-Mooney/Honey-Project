@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from src.extract_write import extract_write
+from src.extract.extract_write import extract_write
 
 
 def test_correct_number_of_lines_is_returned_and_data_is_saved_with_one_product_and_payment():
@@ -88,7 +88,7 @@ def test_correct_number_of_lines_is_returned_and_data_is_saved_with_one_product_
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 3
     assert write_args_mock.call_count == 3
@@ -201,7 +201,7 @@ def test_empty_strings_are_saved_when_no_lat_and_long_are_in_json():
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 3
     assert write_args_mock.call_count == 3
@@ -340,7 +340,7 @@ def test_multiple_products_are_saved():
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 4
     assert write_args_mock.call_count == 4
@@ -456,7 +456,7 @@ def test_cash_payment_is_recorded():
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 3
     assert write_args_mock.call_count == 3
@@ -582,7 +582,7 @@ def test_cash_and_card_payment_is_recorded():
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 4
     assert write_args_mock.call_count == 4
@@ -723,7 +723,7 @@ def test_a_product_with_no_name_gets_passed():
             "vatAmount": 0,
         }
     ]
-    with patch("src.extract_write.write_args") as write_args_mock:
+    with patch("src.extract.extract_write.write_args") as write_args_mock:
         result = extract_write(test_path, test_json)
     assert result == 3
     assert write_args_mock.call_count == 3

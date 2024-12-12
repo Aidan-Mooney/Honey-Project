@@ -1,7 +1,7 @@
 from unittest.mock import patch, call
 
 
-from src.reset_extracts_data import reset_extracts_data
+from src.extract.reset_extracts_data import reset_extracts_data
 
 
 "https://smhk.net/note/2024/04/python-mock-reading-and-writing-files/"
