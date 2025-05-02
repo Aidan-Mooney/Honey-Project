@@ -10,4 +10,5 @@ venv
 
 sandbox.py
 
-data
+data/*
+!data/.gitkeep
